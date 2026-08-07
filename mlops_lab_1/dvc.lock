@@ -1,0 +1,121 @@
+schema: '2.0'
+stages:
+  data_collection:
+    cmd: python src/data_collection.py
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: 3d7b77165ed29c821eb45c178b4c5d33
+      size: 360
+    - path: src/data_collection.py
+      hash: md5
+      md5: 6c2bfdebdd3979d75323a47445f330e7
+      size: 562
+  data_processing:
+    cmd: python src/data_processing.py
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: 3d7b77165ed29c821eb45c178b4c5d33
+      size: 360
+    - path: src/data_processing.py
+      hash: md5
+      md5: 29a444f3f88abcc75b951ff91dc79345
+      size: 1259
+    outs:
+    - path: data/processed/x_test.npy
+      hash: md5
+      md5: 81bcdab3e8c01e3a257fa413f3d4bd4d
+      size: 31360128
+    - path: data/processed/x_train.npy
+      hash: md5
+      md5: 54291d48b0fe2f2ab233b6056b5420b6
+      size: 188160128
+    - path: data/processed/y_test.npy
+      hash: md5
+      md5: e6d24ffff98bc973b3c14df1b4a56631
+      size: 10128
+    - path: data/processed/y_train.npy
+      hash: md5
+      md5: 2d0fed45dac68b413b0442c431eb4cd0
+      size: 60128
+  feature_selection:
+    cmd: python src/feature_selection.py
+    deps:
+    - path: data/processed/x_test.npy
+      hash: md5
+      md5: 81bcdab3e8c01e3a257fa413f3d4bd4d
+      size: 31360128
+    - path: data/processed/x_train.npy
+      hash: md5
+      md5: 54291d48b0fe2f2ab233b6056b5420b6
+      size: 188160128
+    - path: data/processed/y_test.npy
+      hash: md5
+      md5: e6d24ffff98bc973b3c14df1b4a56631
+      size: 10128
+    - path: data/processed/y_train.npy
+      hash: md5
+      md5: 2d0fed45dac68b413b0442c431eb4cd0
+      size: 60128
+    - path: params.yaml
+      hash: md5
+      md5: 3d7b77165ed29c821eb45c178b4c5d33
+      size: 360
+    - path: src/feature_selection.py
+      hash: md5
+      md5: 09884ce353a9b5d8896d1e0a7b9bffa7
+      size: 936
+    outs:
+    - path: data/features/feature_data.npz
+      hash: md5
+      md5: f19276d41976e5637b05743fa0b6b1bb
+      size: 219591002
+  model_training:
+    cmd: python src/model_training.py
+    deps:
+    - path: data/features/feature_data.npz
+      hash: md5
+      md5: f19276d41976e5637b05743fa0b6b1bb
+      size: 219591002
+    - path: params.yaml
+      hash: md5
+      md5: 3d7b77165ed29c821eb45c178b4c5d33
+      size: 360
+    - path: src/model_training.py
+      hash: md5
+      md5: 90d509be845c55a9638f81e9ede101cb
+      size: 2396
+    outs:
+    - path: models/history.npy
+      hash: md5
+      md5: fc6acaeb318bd234a8cf05ef034a9642
+      size: 697
+    - path: models/model.keras
+      hash: md5
+      md5: 6882d84b605dfa2841f86141744af79a
+      size: 2740179
+  model_evaluation:
+    cmd: python src/model_evaluation.py
+    deps:
+    - path: data/features/feature_data.npz
+      hash: md5
+      md5: f19276d41976e5637b05743fa0b6b1bb
+      size: 219591002
+    - path: models/model.keras
+      hash: md5
+      md5: 6882d84b605dfa2841f86141744af79a
+      size: 2740179
+    - path: params.yaml
+      hash: md5
+      md5: 3d7b77165ed29c821eb45c178b4c5d33
+      size: 360
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: 3cc1d69c6e1384992a69a1d1c7dbe175
+      size: 1082
+    outs:
+    - path: artifacts/metrics.json
+      hash: md5
+      md5: b6fdcbd32964ae2c9fa02cfdfe8bf54d
+      size: 73

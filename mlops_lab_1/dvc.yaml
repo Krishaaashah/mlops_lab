@@ -1,0 +1,50 @@
+stages:
+
+  data_collection:
+    cmd: python src/data_collection.py
+    deps:
+      - src/data_collection.py
+      - params.yaml
+
+  data_processing:
+    cmd: python src/data_processing.py
+    deps:
+      - src/data_processing.py
+      - params.yaml
+    outs:
+      - data/processed/x_train.npy
+      - data/processed/y_train.npy
+      - data/processed/x_test.npy
+      - data/processed/y_test.npy
+
+  feature_selection:
+    cmd: python src/feature_selection.py
+    deps:
+      - src/feature_selection.py
+      - data/processed/x_train.npy
+      - data/processed/y_train.npy
+      - data/processed/x_test.npy
+      - data/processed/y_test.npy
+      - params.yaml
+    outs:
+      - data/features/feature_data.npz
+
+  model_training:
+    cmd: python src/model_training.py
+    deps:
+      - src/model_training.py
+      - data/features/feature_data.npz
+      - params.yaml
+    outs:
+      - models/model.keras
+      - models/history.npy
+
+  model_evaluation:
+    cmd: python src/model_evaluation.py
+    deps:
+      - src/model_evaluation.py
+      - models/model.keras
+      - data/features/feature_data.npz
+      - params.yaml
+    outs:
+      - artifacts/metrics.json
