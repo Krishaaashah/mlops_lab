@@ -122,8 +122,9 @@ jobs:
       - name: Smoke-test the container
         run: |
           docker run -d --name smoke -p 8000:8000 image-classifier:ci
-          curl --fail --retry 15 --retry-delay 2 --retry-connrefused http://localhost:8000/health
+          sleep 3
           docker logs smoke
+          curl --fail --retry 20 --retry-delay 2 --retry-connrefused http://127.0.0.1:8000/health
           docker rm -f smoke
 
       - name: Log in to GitHub Container Registry
