@@ -150,6 +150,15 @@ INDEX_HTML = r"""<!doctype html>
   <h1>Image Classifier</h1>
   <p class="sub">Handwritten digit recognition (0-9) &middot; DVC &middot; Docker &middot; GitHub Actions &middot; AWS</p>
 
+  <div style="background:#eef2ff; border:1px solid #c7d2fe; border-radius:10px; padding:12px 16px; margin: 0 0 20px; font-size:0.92rem; color:#3730a3; display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:center;">
+    <div><strong>Student:</strong> Krisha Shah &middot; <strong>PRN:</strong> 24070126512</div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <a href="https://github.com/Krishaaashah/mlops_lab/tree/main/mlops_5" target="_blank" style="color:#4338ca; font-weight:600; text-decoration:none;">&#128279; GitHub Repo</a>
+      <a href="https://github.com/Krishaaashah/mlops_lab/actions" target="_blank" style="color:#4338ca; font-weight:600; text-decoration:none;">&#9989; CI/CD Runs</a>
+      <a href="/docs" style="color:#4338ca; font-weight:600; text-decoration:none;">&#128218; Swagger API</a>
+    </div>
+  </div>
+
   <div class="grid">
     <section class="card">
       <h2>Draw a digit</h2>
@@ -175,7 +184,12 @@ INDEX_HTML = r"""<!doctype html>
     <div id="result"><span class="hint">No prediction yet.</span></div>
   </section>
 
-  <footer>API docs: <a href="/docs">/docs</a> &middot; <a href="/health">/health</a> &middot; <a href="/info">/info</a></footer>
+  <footer>
+    <div>API docs: <a href="/docs">/docs</a> &middot; <a href="/health">/health</a> &middot; <a href="/info">/info</a></div>
+    <div style="margin-top:6px; font-size:0.8rem; color:#6b7385;">
+      Course Project: Handwritten Digit Recognition &middot; AWS EC2 Deployment &middot; DVC S3 Remote
+    </div>
+  </footer>
 </main>
 
 <script>

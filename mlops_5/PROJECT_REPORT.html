@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course Project Report - Krisha Shah (24070126512)</title>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --text: #1f2937;
+    --text-muted: #4b5563;
+    --bg-light: #f9fafb;
+    --card-bg: #ffffff;
+    --border: #e5e7eb;
+    --accent-bg: #eff6ff;
+    --accent-border: #bfdbfe;
+    --code-bg: #1e293b;
+    --code-text: #f8fafc;
+    --success: #16a34a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: #f3f4f6;
+    margin: 0;
+    padding: 24px;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  h1 { font-size: 1.85rem; color: #111827; margin-top: 0; margin-bottom: 8px; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
+  h2 { font-size: 1.35rem; color: #1e3a8a; margin-top: 32px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  h3 { font-size: 1.1rem; color: #1f2937; margin-top: 20px; margin-bottom: 8px; }
+  p { margin: 0 0 12px; }
+  a { color: var(--primary); text-decoration: none; word-break: break-all; }
+  a:hover { text-decoration: underline; }
+  .badge-card {
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .badge-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 8px 16px;
+    font-size: 0.95rem;
+  }
+  .badge-grid strong { color: #1e40af; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.92rem;
+  }
+  th, td {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  th { background: #f8fafc; font-weight: 600; color: #334155; }
+  tr:nth-child(even) td { background: #fdfdfd; }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+  code {
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+  .img-box {
+    margin: 20px 0;
+    text-align: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    background: #fcfcfc;
+  }
+  .img-box img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  }
+  .img-box figcaption {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-weight: 500;
+  }
+  .success-pill {
+    display: inline-block;
+    background: #dcfce7;
+    color: #166534;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.82rem;
+  }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 11pt; }
+    .container { box-shadow: none; padding: 0; max-width: 100%; }
+    .img-box { page-break-inside: avoid; }
+    pre { page-break-inside: avoid; }
+    h2 { page-break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Course Project Report: Production ML Pipeline with DVC, Docker, AWS &amp; GitHub Actions CI/CD</h1>
+  <p style="color:var(--text-muted); font-size:1.05rem; margin-top:-4px;">Optical Handwritten Digit Recognition Service &middot; Automated Cloud Deployment</p>
+
+  <div class="badge-card">
+    <div class="badge-grid">
+      <strong>Student Name:</strong> <span>Krisha Shah</span>
+      <strong>PRN:</strong> <span>24070126512</span>
+      <strong>Course:</strong> <span>MLOps &amp; Cloud Machine Learning Engineering</span>
+      <strong>GitHub Repo:</strong> <span><a href="https://github.com/Krishaaashah/mlops_lab/tree/main/mlops_5" target="_blank">https://github.com/Krishaaashah/mlops_lab/tree/main/mlops_5</a></span>
+      <strong>GitHub Actions CI/CD:</strong> <span><a href="https://github.com/Krishaaashah/mlops_lab/actions/runs/38736393369" target="_blank">Workflow Run #38736393369 (All 3 Jobs Green)</a></span>
+      <strong>Live EC2 Web App:</strong> <span><a href="http://13.232.17.213" target="_blank">http://13.232.17.213</a></span>
+      <strong>FastAPI Swagger API:</strong> <span><a href="http://13.232.17.213/docs" target="_blank">http://13.232.17.213/docs</a></span>
+      <strong>AWS S3 DVC Store:</strong> <span><code>s3://image-classifier-dvc-ks-948215/dvcstore</code> (1,801 objects)</span>
+      <strong>AWS EC2 Instance:</strong> <span><code>i-09a2e2d2bd3f29168</code> (IP: <code>13.232.17.213</code>, Region: <code>ap-south-1</code>)</span>
+    </div>
+  </div>
+
+  <h2>1. Executive Summary</h2>
+  <p>This project implements an end-to-end Machine Learning Operations (MLOps) pipeline for an optical handwritten digit classifier. The architecture bridges model training, version control, automated testing, containerized packaging, cloud provisioning, and continuous deployment to AWS:</p>
+  <ul>
+    <li><strong>Data &amp; Model Versioning:</strong> Data Version Control (DVC) orchestrates the 4-stage ML pipeline (<code>prepare</code> &rarr; <code>preprocess</code> &rarr; <code>train</code> &rarr; <code>evaluate</code>) with remote storage backed by an encrypted <strong>Amazon S3</strong> bucket.</li>
+    <li><strong>Serving Architecture:</strong> A high-performance <strong>FastAPI</strong> web service serving predictions with confidence scores and probability distributions, featuring an interactive drawing canvas.</li>
+    <li><strong>Containerization:</strong> An optimized, secure <strong>Docker</strong> image running as an unprivileged user (<code>appuser</code>) with embedded health checks.</li>
+    <li><strong>Cloud Infrastructure:</strong> Scalable AWS infrastructure including private S3 bucket storage, least-privilege IAM policies, custom Security Groups, and an <strong>Amazon EC2 (t3.micro)</strong> instance running on Amazon Linux 2023.</li>
+    <li><strong>CI/CD Automation:</strong> A 3-tier <strong>GitHub Actions</strong> workflow (<code>pipeline</code> &rarr; <code>docker</code> &rarr; <code>deploy</code>) enabling zero-downtime automated deployment to EC2 upon every push to <code>main</code>.</li>
+  </ul>
+
+  <h2>2. Cloud Architecture Diagram</h2>
+  <pre>
++-----------------------------------------------------------------------------------+
+|                                 DEVELOPER WORKSPACE                               |
+|                                                                                   |
+|  [Code / Tests]       [dvc repro]       [dvc push]                                |
+|         |                  |                 |                                    |
++---------|------------------|-----------------|------------------------------------+
+          |                  |                 |
+          v                  |                 v
++-----------------------+    |    +-------------------------------------------------+
+|  GitHub Repository    |    |    |               AWS S3 REMOTE STORE               |
+|  - .dvc/config        |    |    |  Bucket: image-classifier-dvc-ks-948215         |
+|  - dvc.lock           |    |    |  Prefix: s3://.../dvcstore                      |
+|  - .github/workflows/ |    |    |  - 1,801 objects (Raw data, train/test, model)  |
++-----------------------+    |    +-------------------------------------------------+
+          |                  |                         ^
+          | git push         +-------------------------+
+          v
++-----------------------------------------------------------------------------------+
+|                            GITHUB ACTIONS CI/CD RUNNER                            |
+|                                                                                   |
+|  1. Pipeline Job: dvc pull -> dvc repro -> dvc metrics show -> pytest             |
+|  2. Docker Job  : docker build -> smoke test (/health) -> push ghcr.io            |
+|  3. Deploy Job  : SSH into AWS EC2 -> docker pull -> docker run -p 80:8000        |
++-----------------------------------------------------------------------------------+
+                                                               |
+                                                               | SSH Deploy (Port 22)
+                                                               v
++-----------------------------------------------------------------------------------+
+|                        AWS EC2 INSTANCE (i-09a2e2d2bd3f29168)                     |
+|                        Public IP: 13.232.17.213 | ap-south-1                      |
+|                                                                                   |
+|  +-----------------------------------------------------------------------------+  |
+|  | Security Group (sg-05266645655d69bda)                                       |  |
+|  | - Port 22 (SSH) : 0.0.0.0/0 (Automated CI/CD runner deployment)             |  |
+|  | - Port 80 (HTTP): 0.0.0.0/0 (Public Web Traffic)                            |  |
+|  +-----------------------------------------------------------------------------+  |
+|                                                                                   |
+|  Docker Engine (Active &amp; Auto-restarting):                                        |
+|  +-----------------------------------------------------------------------------+  |
+|  | Container: image-classifier (Port 80 -> 8000)                                |  |
+|  | - GET  /        : Interactive canvas web application UI                     |  |
+|  | - POST /predict : Multi-part image classification endpoint                  |  |
+|  | - GET  /health  : Container health monitoring endpoint                      |  |
+|  | - GET  /docs    : Swagger OpenAPI specifications                            |  |
+|  +-----------------------------------------------------------------------------+  |
++-----------------------------------------------------------------------------------+
+  </pre>
+
+  <h2>3. Machine Learning Pipeline &amp; DVC Metrics</h2>
+  <p>The DVC pipeline achieves <strong>97.22% test accuracy</strong> across 360 held-out evaluation samples:</p>
+  <table>
+    <thead>
+      <tr><th>Metric</th><th>Achieved Value</th><th>Evaluation Samples</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Test Accuracy</strong></td><td><strong>97.22%</strong></td><td>360</td><td><span class="success-pill">Verified</span></td></tr>
+      <tr><td><strong>Macro F1-Score</strong></td><td><strong>0.9723</strong></td><td>360</td><td><span class="success-pill">Verified</span></td></tr>
+      <tr><td><strong>Training Accuracy</strong></td><td><strong>100.0%</strong></td><td>1,437</td><td><span class="success-pill">Verified</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="img-box">
+    <img src="metrics/confusion_matrix.png" alt="Confusion Matrix">
+    <figcaption>Figure 1: Multiclass Confusion Matrix across digits 0-9 on the unseen test set.</figcaption>
+  </div>
+
+  <h2>4. AWS Cloud Infrastructure</h2>
+  <ul>
+    <li><strong>S3 Bucket:</strong> <code>image-classifier-dvc-ks-948215</code> in <code>ap-south-1</code>. Block Public Access enabled, default AES-256 encryption. Holds 1,801 DVC tracked objects (885,511 bytes).</li>
+    <li><strong>IAM User:</strong> <code>dvc-ci-user</code> with custom least-privilege policy restricted to the project bucket.</li>
+    <li><strong>EC2 Instance:</strong> <code>i-09a2e2d2bd3f29168</code> (t3.micro Free Tier, Amazon Linux 2023, Public IPv4: <code>13.232.17.213</code>).</li>
+    <li><strong>Security Group:</strong> <code>sg-05266645655d69bda</code> with TCP 22 (SSH deployment) and TCP 80 (HTTP Web traffic).</li>
+  </ul>
+
+  <h2>5. Live Web Application on AWS EC2</h2>
+  <p>The application is live and accessible at <a href="http://13.232.17.213" target="_blank">http://13.232.17.213</a>. Live digit tests achieved 99.7% confidence:</p>
+
+  <div class="img-box">
+    <img src="screenshots/06_web_app_home.png" alt="Live Web App Home">
+    <figcaption>Figure 2: Live Web Application hosted on AWS EC2 with student metadata banner.</figcaption>
+  </div>
+
+  <div class="img-box">
+    <img src="screenshots/06_web_app_prediction.png" alt="Live Web App Prediction">
+    <figcaption>Figure 3: Live prediction on AWS EC2: Digit 2 classified with 99.7% confidence.</figcaption>
+  </div>
+
+  <h2>6. GitHub Actions Automated CI/CD Execution</h2>
+  <p>The pipeline automatically runs on every push to <code>main</code> at <a href="https://github.com/Krishaaashah/mlops_lab/actions/runs/38736393369" target="_blank">Workflow Run #38736393369</a>:</p>
+
+  <div class="img-box">
+    <img src="screenshots/02_github_actions_green_run.png" alt="GitHub Actions 3 Green Jobs">
+    <figcaption>Figure 4: GitHub Actions Workflow Run #38736393369 showing 3 green checkmarks.</figcaption>
+  </div>
+
+  <h2>7. Raw Terminal Proof &amp; Audit Logs</h2>
+
+  <h3>DVC DAG &amp; Metrics</h3>
+  <pre>
+prepare  ->  preprocess  ->  train  ->  evaluate
+PNG images   train/test       MLP        metrics.json +
+per class    feature sets     model      confusion matrix
+
+Path          accuracy    macro_f1    train_accuracy
+metrics.json  0.97222     0.97227     1.0
+  </pre>
+
+  <h3>AWS S3 DVC Store Objects</h3>
+  <pre>
+Total Objects: 1,801
+Total Size:    885,511 Bytes
+Bucket Name:   image-classifier-dvc-ks-948215
+Region:        ap-south-1
+Encryption:    AES256 (Default SSE)
+Public Access: Blocked (All 4 settings ON)
+  </pre>
+
+  <h3>AWS EC2 Instance &amp; Docker Status</h3>
+  <pre>
+Instance ID:        i-09a2e2d2bd3f29168
+Public IPv4:        13.232.17.213
+Operating System:   Amazon Linux 2023
+Security Group:     sg-05266645655d69bda (Ports 22, 80 open to 0.0.0.0/0)
+
+Remote 'docker ps':
+CONTAINER ID   IMAGE             COMMAND                  STATUS          PORTS
+1f9076f62590   image-classifier  "uvicorn app.main:ap…"   Up 3 hours      0.0.0.0:80->8000/tcp
+  </pre>
+
+  <h2>8. Submission Summary</h2>
+  <table>
+    <thead>
+      <tr><th>Deliverable</th><th>Location / Link</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>GitHub Repository</strong></td><td><a href="https://github.com/Krishaaashah/mlops_lab/tree/main/mlops_5" target="_blank">Krishaaashah/mlops_lab (mlops_5/)</a></td><td><span class="success-pill">Pushed &amp; Live</span></td></tr>
+      <tr><td><strong>CI/CD Workflow</strong></td><td><a href="https://github.com/Krishaaashah/mlops_lab/actions/runs/38736393369" target="_blank">GitHub Actions Run #38736393369</a></td><td><span class="success-pill">All 3 Jobs Green</span></td></tr>
+      <tr><td><strong>AWS S3 Remote</strong></td><td><code>s3://image-classifier-dvc-ks-948215/dvcstore</code></td><td><span class="success-pill">1,801 Objects</span></td></tr>
+      <tr><td><strong>Live Web Application</strong></td><td><a href="http://13.232.17.213" target="_blank">http://13.232.17.213</a></td><td><span class="success-pill">Serving (Port 80)</span></td></tr>
+      <tr><td><strong>Interactive Swagger UI</strong></td><td><a href="http://13.232.17.213/docs" target="_blank">http://13.232.17.213/docs</a></td><td><span class="success-pill">Active</span></td></tr>
+      <tr><td><strong>Submission ZIP</strong></td><td><code>mlops_5_submission_24070126512.zip</code></td><td><span class="success-pill">~1.5 MB (&lt; 8 MB)</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

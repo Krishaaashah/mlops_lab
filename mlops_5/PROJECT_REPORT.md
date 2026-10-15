@@ -1,11 +1,19 @@
 # Course Project Report: Production ML Pipeline with DVC, Docker, AWS & GitHub Actions CI/CD
 
-**Project**: Handwritten Digit Recognition Service  
-**Student**: Krisha Shah  
-**PRN**: 24070126512  
-**Target AWS Region**: `ap-south-1` (Mumbai)  
-**Live Public Application URL**: [http://13.232.17.213](http://13.232.17.213)  
-**Interactive API Documentation (Swagger)**: [http://13.232.17.213/docs](http://13.232.17.213/docs)  
+---
+
+## Student & Submission Details
+
+- **Student Name**: Krisha Shah
+- **PRN**: 24070126512
+- **Course**: MLOps / Cloud Machine Learning Engineering
+- **GitHub Repository**: [https://github.com/Krishaaashah/mlops_lab/tree/main/mlops_5](https://github.com/Krishaaashah/mlops_lab/tree/main/mlops_5)
+- **GitHub Actions CI/CD Pipeline**: [Workflow Run #38736393369](https://github.com/Krishaaashah/mlops_lab/actions/runs/38736393369)
+- **Live AWS EC2 Web Application**: [http://13.232.17.213](http://13.232.17.213)
+- **Interactive API Documentation (Swagger)**: [http://13.232.17.213/docs](http://13.232.17.213/docs)
+- **Target AWS Region**: `ap-south-1` (Mumbai)
+- **AWS S3 Remote Storage**: `s3://image-classifier-dvc-ks-948215/dvcstore`
+- **AWS EC2 Instance ID**: `i-09a2e2d2bd3f29168` (Public IPv4: `13.232.17.213`)
 
 ---
 
@@ -92,12 +100,12 @@ The project adopts **Data Version Control (DVC)** to maintain strict reproducibi
               *           
               *           
               *           
-       +------------+     
-       | preprocess |     
-       +------------+     
-         **        **     
-       **            *    
-      *               **  
+        +------------+     
+        | preprocess |     
+        +------------+     
+          **        **     
+        **            *    
+       *               **  
 +-------+               * 
 | train |             **  
 +-------+            *    
@@ -115,6 +123,9 @@ The project adopts **Data Version Control (DVC)** to maintain strict reproducibi
 | **Test Accuracy** | **97.22%** | 360 |
 | **Macro F1-Score** | **0.9723** | 360 |
 | **Training Accuracy** | **100.0%** | 1,437 |
+
+### Confusion Matrix:
+![Confusion Matrix](metrics/confusion_matrix.png)
 
 ---
 
@@ -191,11 +202,42 @@ Testing image `data/raw/7/0007.png`:
 ```
 
 #### 3. Web UI Prediction Verification:
-Interacting with the live web application at `http://13.232.17.213/` produced a confident prediction (**Digit 2, 99.7% confidence**) with full distribution visualization (captured in `screenshots/06_web_app_prediction.png`).
+Interacting with the live web application at `http://13.232.17.213/` produced a confident prediction (**Digit 2, 99.7% confidence**) with full distribution visualization:
+
+![Live Web Application UI](screenshots/06_web_app_home.png)
+
+![Live Digit 2 Prediction Result](screenshots/06_web_app_prediction.png)
 
 ---
 
-## 6. Challenges Encountered & Technical Resolutions
+## 6. GitHub Actions Automated CI/CD Pipeline
+
+The GitHub Actions workflow (`.github/workflows/ci-cd.yaml`) automates the full test-build-deploy lifecycle on push to `main`:
+
+1. **Job 1: `pipeline` (DVC pipeline and tests)**:
+   - Configures Python 3.12, pulls data and model artifacts from AWS S3 using DVC.
+   - Executes `dvc repro` to ensure end-to-end reproducibility.
+   - Runs `dvc metrics show` and executes full test suite via `pytest`.
+
+2. **Job 2: `docker` (Build and push Docker image)**:
+   - Builds container image tagged for GitHub Container Registry (`ghcr.io`).
+   - Runs smoke test querying container `http://127.0.0.1:8000/health`.
+   - Pushes image to GHCR upon green smoke test.
+
+3. **Job 3: `deploy` (Deploy to AWS EC2)**:
+   - Establishes secure SSH connection to AWS EC2 (`13.232.17.213`) using private key.
+   - Authenticates with GHCR, pulls updated container image.
+   - Stops previous container and starts new container mapped to host port 80 with restart policy `unless-stopped`.
+
+### Workflow Execution Proof:
+- **Run URL**: [https://github.com/Krishaaashah/mlops_lab/actions/runs/38736393369](https://github.com/Krishaaashah/mlops_lab/actions/runs/38736393369)
+- **Status**: All 3 jobs completed successfully with green checkmarks.
+
+![GitHub Actions 3 Green Jobs](screenshots/02_github_actions_green_run.png)
+
+---
+
+## 7. Challenges Encountered & Technical Resolutions
 
 | # | Challenge | Root Cause | Resolution Applied |
 |---|---|---|---|
@@ -204,24 +246,55 @@ Interacting with the live web application at `http://13.232.17.213/` produced a 
 | **3** | Local Router DNS Failure for PyPI | Local Wi-Fi router DNS (`192.168.0.1`) returned `RCODE_SERVER_FAILURE` for `pypi.org`. | Used Tsinghua University PyPI mirror (`pypi.tuna.tsinghua.edu.cn`) and standalone tool packages to bypass local DNS resolution failures. |
 | **4** | Missing GitHub CLI (`gh`) & DVC in PATH | Machine did not have `gh` and `dvc` installed in system-wide environment variables. | Installed and packaged standalone binaries into `C:\Users\krisha\AppData\Local\Microsoft\WindowsApps\`, enabling global execution. |
 | **5** | OpenSSH `UNPROTECTED PRIVATE KEY FILE` | Windows NTFS inheritance granted permissions to SYSTEM, Administrators, and generic machine accounts. | Executed `icacls /inheritance:r` and granted explicit read-only access exclusively to `krisha\krisha:R`. |
+| **6** | GitHub Actions Runner Smoke Test IPv6 Resolution | GitHub-hosted Ubuntu runners resolve `localhost` to IPv6 (`::1`), whereas Docker binds host ports to IPv4 (`0.0.0.0:8000`), rejecting IPv6 traffic. | Changed test URL from `http://localhost:8000/health` to explicit IPv4 `http://127.0.0.1:8000/health` and added `sleep 3` for graceful server startup. |
 
 ---
 
-## 7. Evidence & Submission Artifacts Summary
+## 8. Terminal Evidence & Raw Audit Logs
 
-The evidence artifacts for the grading submission are organized as follows:
+### 1. DVC Pipeline DAG & Metrics Show:
+```text
+Stages:
+prepare  ->  preprocess  ->  train  ->  evaluate
+PNG images   train/test       MLP        metrics.json +
+per class    feature sets     model      confusion matrix
 
-| Deliverable | Location / URL | Status |
+Path          accuracy    macro_f1    train_accuracy
+metrics.json  0.97222     0.97227     1.0
+```
+
+### 2. AWS S3 Remote Bucket Verification (`s3://image-classifier-dvc-ks-948215/dvcstore`):
+```text
+Total Objects: 1,801
+Total Size:    885,511 Bytes
+Bucket Name:   image-classifier-dvc-ks-948215
+Region:        ap-south-1
+Encryption:    AES256 (Default SSE)
+Public Access: Blocked (All 4 settings ON)
+```
+
+### 3. AWS EC2 Instance & Remote Docker Verification:
+```text
+Instance ID:        i-09a2e2d2bd3f29168
+Public IPv4:        13.232.17.213
+Operating System:   Amazon Linux 2023
+Security Group:     sg-05266645655d69bda (Ports 22, 80 open to 0.0.0.0/0)
+
+Remote 'docker ps':
+CONTAINER ID   IMAGE                                COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+1f9076f62590   image-classifier                     "uvicorn app.main:ap…"   3 hours ago      Up 3 hours      0.0.0.0:80->8000/tcp, [::]:80->8000/tcp image-classifier
+```
+
+---
+
+## 9. Deliverables & Submission Checklist
+
+| Deliverable | Location / URL | Verification Status |
 | :--- | :--- | :--- |
 | **Source Code & Pipelines** | [Krishaaashah/mlops_lab (mlops_5/)](https://github.com/Krishaaashah/mlops_lab/tree/main/mlops_5) | Complete & Pushed |
-| **GitHub Actions CI/CD Pipeline** | [Workflow Run #38723494150](https://github.com/Krishaaashah/mlops_lab/actions/runs/38723494150) | Green / Succeeded |
-| **DVC Remote Artifacts** | `s3://image-classifier-dvc-ks-948215/dvcstore` (1,801 objects) | Verified |
-| **Live EC2 Web Application** | [http://13.232.17.213/](http://13.232.17.213/) | Active & Verified |
-| **API Swagger Documentation** | [http://13.232.17.213/docs](http://13.232.17.213/docs) | Active & Verified |
-| **DVC DAG & Metrics Log** | `screenshots/01_dvc_pipeline_dag_metrics.txt` | Captured |
-| **GitHub Actions Green Run Screenshot**| `screenshots/02_github_actions_green_run.png` | Captured |
-| **S3 Storage & Security Log** | `screenshots/03_aws_s3_bucket_contents.txt` | Captured |
-| **EC2 & Remote Docker Log** | `screenshots/05_ec2_details_and_ssh_docker.txt` | Captured |
-| **Live Web App Prediction Screenshot**| `screenshots/06_web_app_prediction.png` | Captured (99.7% Confident) |
-| **Technical Setup Audit Notes**| `AWS_SETUP_NOTES.md` | Documented |
-| **Screenshot Checklist & Links**| `screenshots/SCREENSHOT_CHECKLIST.md` | Documented |
+| **GitHub Actions CI/CD Pipeline** | [Workflow Run #38736393369](https://github.com/Krishaaashah/mlops_lab/actions/runs/38736393369) | All 3 Jobs Green |
+| **DVC Remote Artifacts (S3)** | `s3://image-classifier-dvc-ks-948215/dvcstore` (1,801 objects) | Synced & Verified |
+| **Live EC2 Web Application** | [http://13.232.17.213/](http://13.232.17.213/) | Active & Serving |
+| **FastAPI Swagger Docs** | [http://13.232.17.213/docs](http://13.232.17.213/docs) | Active & Serving |
+| **Clean Submission ZIP** | `mlops_5_submission_24070126512.zip` (~1.5 MB) | Ready on Desktop |
+| **Printable Report Document** | `PROJECT_REPORT.md` / `PROJECT_REPORT.html` | Ready for PDF Export |
