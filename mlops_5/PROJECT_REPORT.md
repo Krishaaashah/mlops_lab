@@ -213,11 +213,13 @@ The evidence artifacts for the grading submission are organized as follows:
 
 | Deliverable | Location / URL | Status |
 | :--- | :--- | :--- |
-| **Source Code & Pipelines** | Open Repository (`dvc.yaml`, `Dockerfile`, `.github/workflows/ci-cd.yaml`) | Complete |
+| **Source Code & Pipelines** | [Krishaaashah/mlops_lab (mlops_5/)](https://github.com/Krishaaashah/mlops_lab/tree/main/mlops_5) | Complete & Pushed |
+| **GitHub Actions CI/CD Pipeline** | [Workflow Run #38723494150](https://github.com/Krishaaashah/mlops_lab/actions/runs/38723494150) | Green / Succeeded |
 | **DVC Remote Artifacts** | `s3://image-classifier-dvc-ks-948215/dvcstore` (1,801 objects) | Verified |
 | **Live EC2 Web Application** | [http://13.232.17.213/](http://13.232.17.213/) | Active & Verified |
 | **API Swagger Documentation** | [http://13.232.17.213/docs](http://13.232.17.213/docs) | Active & Verified |
 | **DVC DAG & Metrics Log** | `screenshots/01_dvc_pipeline_dag_metrics.txt` | Captured |
+| **GitHub Actions Green Run Screenshot**| `screenshots/02_github_actions_green_run.png` | Captured |
 | **S3 Storage & Security Log** | `screenshots/03_aws_s3_bucket_contents.txt` | Captured |
 | **EC2 & Remote Docker Log** | `screenshots/05_ec2_details_and_ssh_docker.txt` | Captured |
 | **Live Web App Prediction Screenshot**| `screenshots/06_web_app_prediction.png` | Captured (99.7% Confident) |

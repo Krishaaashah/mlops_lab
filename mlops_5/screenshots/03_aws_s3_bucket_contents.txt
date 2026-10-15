@@ -1,0 +1,36 @@
+================================================================================
+AWS S3 BUCKET & DVC REMOTE STORAGE REPORT
+Bucket: image-classifier-dvc-ks-948215
+Region: ap-south-1 (Mumbai)
+Prefix: s3://image-classifier-dvc-ks-948215/dvcstore
+================================================================================
+
+$ aws s3 ls s3://image-classifier-dvc-ks-948215/dvcstore/ --recursive --summarize
+Total Objects: 1801
+Total Size   : 885511 bytes (~885 KB)
+
+Sample storage keys:
+  dvcstore/files/md5/00/1949feeb232d6c973808abdaaff36d
+  dvcstore/files/md5/00/1eb638689c9ab37ca6f635f7ee196b
+  dvcstore/files/md5/00/b6460fdae84ae213095eebba499637
+  dvcstore/files/md5/5d/4941aeeeb5bf9bb42466857a1dea07 (train.npz)
+  dvcstore/files/md5/77/8eea0fb284e40239caa674dce08022 (model.joblib)
+  dvcstore/files/md5/e7/45c1cbb8590b94bb661a83176b6d50 (test.npz)
+  ... (1,801 total tracked artifacts)
+
+--------------------------------------------------------------------------------
+Security & Encryption Configuration:
+- Block Public Access:
+  * BlockPublicAcls   : true
+  * IgnorePublicAcls  : true
+  * BlockPublicPolicy : true
+  * RestrictPublicBuckets : true
+
+- Server-Side Encryption:
+  * Default Encryption: Enabled
+  * SSEAlgorithm      : AES256
+
+- IAM Access Policy:
+  * User: dvc-ci-user
+  * Permissions: s3:ListBucket on bucket; s3:GetObject, s3:PutObject, s3:DeleteObject on bucket/*
+================================================================================

@@ -1,0 +1,31 @@
+================================================================================
+AWS EC2 INSTANCE & REMOTE DOCKER DAEMON REPORT
+Instance ID: i-09a2e2d2bd3f29168
+Region     : ap-south-1 (Mumbai)
+Public IP  : 13.232.17.213
+Key Pair   : image-classifier-key
+Sec Group  : sg-05266645655d69bda (image-classifier-sg)
+================================================================================
+
+$ aws ec2 describe-instances --instance-ids i-09a2e2d2bd3f29168
+{
+    "InstanceId": "i-09a2e2d2bd3f29168",
+    "InstanceType": "t3.micro",
+    "State": "running",
+    "PublicIp": "13.232.17.213",
+    "LaunchTime": "2026-10-15T09:20:03+00:00",
+    "VpcId": "vpc-015545d8060cdd043",
+    "SubnetId": "subnet-042ae55a7ed8dd981",
+    "SecurityGroup": "sg-05266645655d69bda"
+}
+
+--------------------------------------------------------------------------------
+$ ssh -i C:\Users\krisha\.ssh\image-classifier-key.pem ec2-user@13.232.17.213 "docker --version && docker ps"
+
+Docker version 25.0.14, build 0bab007
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+Uptime: up 15 min, 0 users, load average: 0.00, 0.04, 0.04
+Docker Daemon: enabled and active (systemctl status docker: active (running))
+User Group   : ec2-user added to 'docker' group (runs without sudo)
+================================================================================

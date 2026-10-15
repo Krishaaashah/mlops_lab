@@ -5,8 +5,6 @@ __pycache__/
 .env
 *.pem
 .DS_Store
-AWS_SETUP_NOTES.md
 *credentials*
 *.key
 .tools/
-screenshots/

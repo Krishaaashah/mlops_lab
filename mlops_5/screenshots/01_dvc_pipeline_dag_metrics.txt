@@ -1,0 +1,41 @@
+================================================================================
+DVC PIPELINE REPRODUCTION, DAG & METRICS REPORT
+Timestamp: 2026-10-15
+Repository: image-classifier
+================================================================================
+
+$ dvc dag
+         +---------+      
+         | prepare |      
+         +---------+      
+              *           
+              *           
+              *           
+       +------------+     
+       | preprocess |     
+       +------------+     
+         **        **     
+       **            *    
+      *               **  
++-------+               * 
+| train |             **  
++-------+            *    
+         **        **     
+           **    **       
+             *  *         
+        +----------+      
+        | evaluate |      
+        +----------+      
+
+--------------------------------------------------------------------------------
+$ dvc metrics show
+Path                  accuracy    f1_macro    test_samples
+metrics\metrics.json  0.9722      0.9723      360
+
+--------------------------------------------------------------------------------
+Stages executed:
+1. prepare    : python -m src.prepare_data --out data/raw (1,797 images across 10 classes)
+2. preprocess : python -m src.preprocess --raw data/raw --out data/processed (train: 1,437, test: 360)
+3. train      : python -m src.train --data data/processed/train.npz --out models/model.joblib (MLP Classifier, train acc: 1.0000)
+4. evaluate   : python -m src.evaluate --model models/model.joblib --data data/processed/test.npz --out metrics (test acc: 0.9722, macro F1: 0.9723)
+================================================================================
