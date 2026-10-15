@@ -1,0 +1,7 @@
+# Development / CI dependencies: runtime + DVC pipeline + tests
+-r requirements.txt
+dvc[s3]==3.67.1
+matplotlib==3.11.2
+pyyaml==6.0.3
+pytest==9.1.1
+httpx==0.28.1

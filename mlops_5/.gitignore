@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+*.pem
+.DS_Store
+AWS_SETUP_NOTES.md
+*credentials*
+*.key
+.tools/
+screenshots/

@@ -1,0 +1,6 @@
+[core]
+    analytics = false
+    remote = s3remote
+['remote "s3remote"']
+    url = s3://image-classifier-dvc-ks-948215/dvcstore
+    region = ap-south-1

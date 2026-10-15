@@ -1,0 +1,16 @@
+.git
+.github
+.dvc
+.venv
+**/__pycache__
+.pytest_cache
+data
+tests
+*.md
+dvc.yaml
+dvc.lock
+params.yaml
+requirements-train.txt
+pytest.ini
+.env
+*.pem

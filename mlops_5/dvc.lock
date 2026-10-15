@@ -1,0 +1,99 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m src.prepare_data --out data/raw
+    deps:
+    - path: src/prepare_data.py
+      hash: md5
+      md5: c8660200899fb39028a560485d081798
+      size: 1115
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: 922beae17a7e2a89de09904e560e89ce.dir
+      size: 340754
+      nfiles: 1797
+  preprocess:
+    cmd: python -m src.preprocess --raw data/raw --out data/processed
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 922beae17a7e2a89de09904e560e89ce.dir
+      size: 340754
+      nfiles: 1797
+    - path: src/imgproc.py
+      hash: md5
+      md5: 53da0f3f6a0a929cd4bd9fa463313183
+      size: 2856
+    - path: src/preprocess.py
+      hash: md5
+      md5: 6dd208de23044fea2cf28577f8252a39
+      size: 1563
+    params:
+      params.yaml:
+        preprocess.seed: 42
+        preprocess.test_size: 0.2
+    outs:
+    - path: data/processed/test.npz
+      hash: md5
+      md5: 12c18eac69d74ed502626a956db9adf4
+      size: 27061
+    - path: data/processed/train.npz
+      hash: md5
+      md5: e93a060d86f2c5d166799cb233f46b40
+      size: 104249
+  train:
+    cmd: python -m src.train --data data/processed/train.npz --out 
+      models/model.joblib
+    deps:
+    - path: data/processed/train.npz
+      hash: md5
+      md5: e93a060d86f2c5d166799cb233f46b40
+      size: 104249
+    - path: src/imgproc.py
+      hash: md5
+      md5: 53da0f3f6a0a929cd4bd9fa463313183
+      size: 2856
+    - path: src/train.py
+      hash: md5
+      md5: cff1a66e3cd013f23464f694a54fe03a
+      size: 1658
+    params:
+      params.yaml:
+        train:
+          hidden_layers:
+          - 128
+          - 64
+          alpha: 0.0001
+          max_iter: 500
+          seed: 42
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: b79988726e164e056c0848d9b8cebcda
+      size: 287657
+  evaluate:
+    cmd: python -m src.evaluate --model models/model.joblib --data 
+      data/processed/test.npz --out metrics
+    deps:
+    - path: data/processed/test.npz
+      hash: md5
+      md5: 12c18eac69d74ed502626a956db9adf4
+      size: 27061
+    - path: models/model.joblib
+      hash: md5
+      md5: b79988726e164e056c0848d9b8cebcda
+      size: 287657
+    - path: src/evaluate.py
+      hash: md5
+      md5: 224d544fddde5921deb0551da49b00f3
+      size: 1812
+    outs:
+    - path: metrics/confusion_matrix.png
+      hash: md5
+      md5: 998557043110347d3c4b140368fee64e
+      size: 41680
+    - path: metrics/metrics.json
+      hash: md5
+      md5: 465200fb41d57117c1aa262402507a86
+      size: 75

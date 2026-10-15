@@ -1,0 +1,48 @@
+stages:
+  # 1. Export the raw dataset as PNG images (one folder per class)
+  prepare:
+    cmd: python -m src.prepare_data --out data/raw
+    deps:
+      - src/prepare_data.py
+    outs:
+      - data/raw
+
+  # 2. Pre-process every image and split into train / test sets
+  preprocess:
+    cmd: python -m src.preprocess --raw data/raw --out data/processed
+    deps:
+      - src/preprocess.py
+      - src/imgproc.py
+      - data/raw
+    params:
+      - preprocess.test_size
+      - preprocess.seed
+    outs:
+      - data/processed/train.npz
+      - data/processed/test.npz
+
+  # 3. Train the classifier
+  train:
+    cmd: python -m src.train --data data/processed/train.npz --out models/model.joblib
+    deps:
+      - src/train.py
+      - src/imgproc.py
+      - data/processed/train.npz
+    params:
+      - train
+    outs:
+      - models/model.joblib
+
+  # 4. Evaluate on the held-out test set
+  evaluate:
+    cmd: python -m src.evaluate --model models/model.joblib --data data/processed/test.npz --out metrics
+    deps:
+      - src/evaluate.py
+      - models/model.joblib
+      - data/processed/test.npz
+    metrics:
+      - metrics/metrics.json:
+          cache: false
+    plots:
+      - metrics/confusion_matrix.png:
+          cache: false

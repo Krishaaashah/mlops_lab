@@ -1,0 +1,191 @@
+name: CI/CD - MLOps 5
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mlops_5/**'
+      - '.github/workflows/ci-cd.yaml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'mlops_5/**'
+      - '.github/workflows/ci-cd.yaml'
+  workflow_dispatch:
+
+concurrency:
+  group: ci-cd-mlops5-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ------------------------------------------------------------------
+  # 1. Reproduce the DVC pipeline, sync with S3, run the tests
+  # ------------------------------------------------------------------
+  pipeline:
+    name: DVC pipeline and tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mlops_5
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'ap-south-1' }}
+      # 'true' only when AWS credentials are stored as repository secrets
+      HAS_AWS: ${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_SECRET_ACCESS_KEY != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            mlops_5/requirements.txt
+            mlops_5/requirements-train.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-train.txt
+
+      - name: Pull data and model from the S3 DVC remote
+        if: env.HAS_AWS == 'true'
+        run: dvc pull --allow-missing || echo "Nothing to pull yet (first run or no remote configured)"
+
+      - name: Reproduce the DVC pipeline
+        run: dvc repro
+
+      - name: Show pipeline DAG and metrics
+        run: |
+          dvc dag
+          dvc metrics show
+
+      - name: Push data and model to the S3 DVC remote
+        if: env.HAS_AWS == 'true' && github.event_name != 'pull_request'
+        run: dvc push
+
+      - name: Run tests
+        run: pytest -v
+
+      - name: Upload model bundle for the Docker job
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-bundle
+          path: |
+            mlops_5/models/model.joblib
+            mlops_5/metrics/metrics.json
+            mlops_5/metrics/confusion_matrix.png
+          if-no-files-found: error
+
+  # ------------------------------------------------------------------
+  # 2. Build the Docker image, smoke-test it, push to GitHub Container Registry
+  # ------------------------------------------------------------------
+  docker:
+    name: Build and push Docker image
+    needs: pipeline
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download model bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: model-bundle
+          path: mlops_5
+
+      - name: Check the files the image needs
+        run: ls -l mlops_5/models/model.joblib mlops_5/metrics/metrics.json
+
+      - name: Compute image name (registry names must be lowercase)
+        id: meta
+        run: echo "image=ghcr.io/${GITHUB_REPOSITORY,,}/image-classifier" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build image for the smoke test
+        uses: docker/build-push-action@v6
+        with:
+          context: ./mlops_5
+          load: true
+          push: false
+          tags: image-classifier:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke-test the container
+        run: |
+          docker run -d --name smoke -p 8000:8000 image-classifier:ci
+          curl --fail --retry 15 --retry-delay 2 --retry-connrefused http://localhost:8000/health
+          docker logs smoke
+          docker rm -f smoke
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./mlops_5
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}:latest
+            ${{ steps.meta.outputs.image }}:${{ github.sha }}
+          cache-from: type=gha
+
+  # ------------------------------------------------------------------
+  # 3. Deploy the container to AWS EC2 over SSH (main branch only)
+  # ------------------------------------------------------------------
+  deploy:
+    name: Deploy to AWS EC2
+    needs: docker
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    env:
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+      # 'true' only when the EC2 connection secrets exist
+      HAS_EC2: ${{ secrets.EC2_HOST != '' && secrets.EC2_SSH_KEY != '' }}
+    steps:
+      - name: EC2 not configured yet
+        if: env.HAS_EC2 != 'true'
+        run: echo "::notice::EC2_HOST / EC2_SSH_KEY secrets are not set, skipping deployment."
+
+      - name: Deploy container over SSH
+        if: env.HAS_EC2 == 'true'
+        uses: appleboy/ssh-action@v1
+        env:
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE: ${{ needs.docker.outputs.image }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER || 'ec2-user' }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          envs: GHCR_USER,GHCR_TOKEN,IMAGE
+          script: |
+            set -e
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            docker pull "$IMAGE:latest"
+            docker rm -f image-classifier 2>/dev/null || true
+            docker run -d --name image-classifier --restart unless-stopped -p 80:8000 "$IMAGE:latest"
+            docker logout ghcr.io
+            docker image prune -f
+
+      - name: Verify the deployment
+        if: env.HAS_EC2 == 'true'
+        run: curl --fail --retry 15 --retry-delay 3 --retry-connrefused "http://${EC2_HOST}/health"
